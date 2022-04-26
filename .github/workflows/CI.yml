@@ -476,6 +476,8 @@ jobs:
       - name: Publish
         run: |
           mv artifacts/**/*.node .
+          ls -R .
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           npm publish --access public
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
