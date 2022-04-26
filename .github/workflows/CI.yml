@@ -460,32 +460,31 @@ jobs:
           node-version: 16
           check-latest: true
           cache: yarn
-      # - name: Cache NPM dependencies
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: node_modules
-      #     key: npm-cache-ubuntu-latest-${{ hashFiles('yarn.lock') }}
-      #     restore-keys: |
-      #       npm-cache-
-      # - name: Install dependencies
-      #   run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
+      - name: Cache NPM dependencies
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: npm-cache-ubuntu-latest-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            npm-cache-
+      - name: Install dependencies
+        run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download all artifacts
         uses: actions/download-artifact@v2
         with:
           path: artifacts
-      - name: Unpack artifacts
+      - name: Publish
         run: |
           mv artifacts/**/*.node .
-          rm -rf artifacts
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+          cat ~/.npmrc
+          yarn publish --access=public --registry=registry.npmjs.org --non-interactive
+          yarn pack -f hfn.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: package
-          path: .
-      # - name: Publish
-      #   run: |
-      #     echo "//registry.npmjs.org/:_authToken=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" >> ~/.npmrc
-      #     npm publish --access public
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          name: hfn.tgz
+          path: ./hfn.tgz

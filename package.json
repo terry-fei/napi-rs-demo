@@ -12,6 +12,11 @@
     "node-addon",
     "node-addon-api"
   ],
+  "files": [
+    "index.*",
+    "package-template.*",
+    "simple-test.js"
+  ],
   "napi": {
     "name": "package-template",
     "triples": {
